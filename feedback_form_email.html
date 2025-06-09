@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback via Email</title>
+  <style>
+    body {
+      background: #081c15;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .feedback-form {
+      background: #0b2e24;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0, 255, 204, 0.2);
+      width: 90%;
+      max-width: 400px;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #00ffcc33;
+      background: #102c25;
+      color: #b8f3e8;
+      resize: vertical;
+      min-height: 100px;
+    }
+    button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      background: #00ffcc;
+      color: #001510;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffcc88;
+    }
+  </style>
+</head>
+<body>
+  <form class="feedback-form" action="https://formsubmit.co/betoniwe@gmail.com" method="POST">
+    <h2>Leave your feedback</h2>
+    <textarea name="message" placeholder="Your message..." required></textarea>
+    <button type="submit">Send Feedback</button>
+  </form>
+</body>
+</html>
