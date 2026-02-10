@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>КП — Telegram Bot / Mini App</title>
+  <meta name="description" content="Коммерческое предложение: разработка Telegram-бота или Mini App под бизнес-задачи." />
+
+  <style>
+    :root{
+      --bg: #0b0f14;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.04);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --muted2: rgba(255,255,255,.55);
+      --stroke: rgba(255,255,255,.12);
+      --accent: #3BF6B0;
+      --accent2: #5CC8FF;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius: 20px;
+      --radius2: 28px;
+      --max: 1080px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(900px 700px at 15% 10%, rgba(92,200,255,.16), transparent 60%),
+        radial-gradient(900px 700px at 85% 20%, rgba(59,246,176,.14), transparent 55%),
+        radial-gradient(1200px 900px at 50% 95%, rgba(255,255,255,.06), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    a{ color: inherit; text-decoration: none; }
+    .container{ width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
+
+    /* Top bar */
+    .topbar{
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(to bottom, rgba(11,15,20,.88), rgba(11,15,20,.60));
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .topbar-inner{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 14px 0;
+      gap: 14px;
+    }
+    .brand{
+      display:flex; align-items:center; gap: 10px;
+      min-width: 240px;
+    }
+    .logo{
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, rgba(59,246,176,.9), rgba(92,200,255,.85));
+      box-shadow: 0 12px 30px rgba(59,246,176,.18);
+    }
+    .brand b{ font-weight: 700; letter-spacing: .2px; }
+    .brand span{ display:block; font-size: 12px; color: var(--muted2); margin-top: 2px; }
+
+    .nav{
+      display:flex; gap: 14px; align-items:center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .nav a{
+      font-size: 13px;
+      color: var(--muted);
+      padding: 8px 10px;
+      border-radius: 12px;
+      transition: .2s ease;
+    }
+    .nav a:hover{ background: rgba(255,255,255,.06); color: var(--text); }
+
+    .actions{ display:flex; align-items:center; gap: 10px; min-width: 240px; justify-content: flex-end; }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 13px;
+      transition: .2s ease;
+      cursor: pointer;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.08); }
+    .btn.primary{
+      border: 1px solid rgba(59,246,176,.35);
+      background: linear-gradient(135deg, rgba(59,246,176,.18), rgba(92,200,255,.12));
+      box-shadow: 0 16px 50px rgba(59,246,176,.10);
+    }
+    .btn.primary:hover{ box-shadow: 0 18px 55px rgba(92,200,255,.10); }
+    .btn.ghost{ background: transparent; }
+
+    /* Hero */
+    .hero{ padding: 56px 0 26px; }
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.4fr .9fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+    }
+    .hero-main{ padding: 26px; position: relative; overflow: hidden; }
+    .badge{
+      display:inline-flex; gap: 8px; align-items:center;
+      font-size: 12px; color: var(--muted);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: rgba(255,255,255,.04);
+    }
+    .dot{
+      width: 8px; height: 8px; border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 0 4px rgba(59,246,176,.12);
+    }
+    h1{
+      margin: 14px 0 10px;
+      font-size: clamp(28px, 4.2vw, 44px);
+      line-height: 1.05;
+      letter-spacing: -0.6px;
+    }
+    .lead{
+      margin: 0 0 16px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--muted);
+      max-width: 56ch;
+    }
+    .hero-cta{
+      display:flex; gap: 10px; flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .mini{
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted2);
+    }
+    .glow{
+      position:absolute; inset: -200px -200px auto auto;
+      width: 380px; height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(92,200,255,.25), transparent 60%),
+                  radial-gradient(circle at 70% 70%, rgba(59,246,176,.22), transparent 55%);
+      filter: blur(16px);
+      transform: rotate(12deg);
+      pointer-events:none;
+      opacity: .85;
+    }
+
+    .hero-side{ padding: 18px; display:flex; flex-direction:column; gap: 12px; }
+    .kpi{
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+    }
+    .kpi .t{ font-size: 12px; color: var(--muted2); }
+    .kpi .v{ font-size: 18px; font-weight: 750; margin-top: 6px; }
+    .kpi .d{ font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.35; }
+
+    /* Sections */
+    section{ padding: 22px 0; }
+    .section-title{
+      display:flex; align-items: baseline; justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .section-title h2{
+      margin:0;
+      font-size: 18px;
+      letter-spacing: -.2px;
+    }
+    .section-title p{
+      margin:0;
+      font-size: 12px;
+      color: var(--muted2);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .panel{
+      grid-column: span 6;
+      padding: 18px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      box-shadow: 0 14px 45px rgba(0,0,0,.28);
+      overflow:hidden;
+      position:relative;
+    }
+    .panel.big{ grid-column: span 7; }
+    .panel.small{ grid-column: span 5; }
+
+    .panel h3{
+      margin:0 0 10px;
+      font-size: 14px;
+      color: rgba(255,255,255,.88);
+    }
+    .panel ul{
+      margin:0; padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 13px;
+    }
+    .panel p{ margin:0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+
+    .pillrow{ display:flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .pill{
+      font-size: 12px;
+      color: rgba(255,255,255,.76);
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      padding: 7px 10px;
+      border-radius: 999px;
+    }
+    .pill.accent{
+      border-color: rgba(59,246,176,.25);
+      background: linear-gradient(135deg, rgba(59,246,176,.14), rgba(92,200,255,.08));
+    }
+
+    .steps{
+      display:grid; grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .step{
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+    }
+    .step b{ display:block; font-size: 13px; margin-bottom: 6px; }
+    .step span{ font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+    .quote{
+      padding: 18px;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(135deg, rgba(59,246,176,.10), rgba(92,200,255,.06));
+      display:flex; flex-direction:column; gap: 8px;
+    }
+    .quote .q{ font-size: 13px; color: rgba(255,255,255,.86); line-height: 1.55; }
+    .quote .a{ font-size: 12px; color: var(--muted2); }
+
+    /* Footer CTA */
+    .cta{
+      padding: 24px;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      box-shadow: var(--shadow);
+      display:flex; align-items:center; justify-content: space-between;
+      gap: 12px;
+    }
+    .cta h3{ margin:0; font-size: 16px; letter-spacing: -.2px; }
+    .cta p{ margin: 6px 0 0; font-size: 12px; color: var(--muted); line-height: 1.45; }
+    .cta .right{ display:flex; gap: 10px; flex-wrap: wrap; justify-content:flex-end; }
+
+    footer{
+      padding: 18px 0 32px;
+      color: var(--muted2);
+      font-size: 12px;
+    }
+    .fine{ display:flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+    /* Reveal animations */
+    .reveal{ opacity: 0; transform: translateY(14px); transition: .7s ease; }
+    .reveal.show{ opacity: 1; transform: translateY(0); }
+    .reveal.delay-1{ transition-delay: .08s; }
+    .reveal.delay-2{ transition-delay: .16s; }
+    .reveal.delay-3{ transition-delay: .24s; }
+
+    /* Responsive */
+    @media (max-width: 920px){
+      .hero-grid{ grid-template-columns: 1fr; }
+      .actions{ min-width: auto; }
+      .brand{ min-width: auto; }
+      .panel.big, .panel.small{ grid-column: span 12; }
+      .steps{ grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px){
+      .nav{ display:none; }
+      .steps{ grid-template-columns: 1fr; }
+      .cta{ flex-direction: column; align-items: flex-start; }
+      .cta .right{ width: 100%; justify-content: flex-start; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <b>Коммерческое предложение</b>
+          <span>Telegram Bot / Mini App • разовая разработка</span>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Навигация">
+        <a href="#solution">Решение</a>
+        <a href="#outcomes">Результат</a>
+        <a href="#process">Этапы</a>
+        <a href="#terms">Условия</a>
+      </nav>
+
+      <div class="actions">
+        <a class="btn ghost" href="#terms">Сроки/стоимость</a>
+        <a class="btn primary" href="#contact">Обсудить задачу</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero">
+      <div class="hero-grid">
+        <div class="card hero-main reveal show">
+          <div class="glow" aria-hidden="true"></div>
+
+          <div class="badge">
+            <span class="dot" aria-hidden="true"></span>
+            <span>КП на разработку • Bot / Mini App • под бизнес-цели</span>
+          </div>
+
+          <h1>Telegram-решение, которое реально работает в продакшене</h1>
+          <p class="lead">
+            Разработаю Telegram-бота или Mini App под ваши задачи: автоматизация, заявки, воронка, доступ, интеграции.
+            Без лишнего — только то, что приносит результат.
+          </p>
+
+          <div class="hero-cta">
+            <!-- ЗАМЕНИ ССЫЛКИ -->
+            <a class="btn primary" href="https://t.me/USERNAME" target="_blank" rel="noreferrer">Написать в Telegram</a>
+            <a class="btn" href="#solution">Посмотреть предложение</a>
+            <button class="btn" id="btnPdf" type="button">Сохранить в PDF</button>
+          </div>
+
+          <div class="mini">
+            Исполнитель: <b>[Твоё имя]</b> • Контакты: <b>@USERNAME</b> • Город/часовой пояс: <b>по договорённости</b>
+          </div>
+        </div>
+
+        <aside class="card hero-side reveal show delay-1">
+          <div class="kpi">
+            <div class="t">Формат</div>
+            <div class="v">Разовая разработка</div>
+            <div class="d">Фиксируем объём, этапы и критерии готовности до начала работ.</div>
+          </div>
+          <div class="kpi">
+            <div class="t">Фокус</div>
+            <div class="v">Пользовательский путь</div>
+            <div class="d">Сценарии, UX, минимизация трения — чтобы люди доходили до целевого действия.</div>
+          </div>
+          <div class="kpi">
+            <div class="t">Техника</div>
+            <div class="v">API • БД • Интеграции</div>
+            <div class="d">Подключение внешних сервисов, хранение данных, админ-логика (если нужно).</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <section id="solution">
+      <div class="section-title">
+        <h2>Решение</h2>
+        <p>что именно я делаю</p>
+      </div>
+
+      <div class="grid">
+        <div class="panel big reveal">
+          <h3>Telegram Bot / Mini App под ваши задачи</h3>
+          <p>
+            Разработка “под ключ”: проектирование сценариев → реализация → тестирование → передача готового решения.
+            На выходе вы получаете рабочий инструмент, готовый к использованию и развитию.
+          </p>
+          <div class="pillrow">
+            <span class="pill accent">Сценарии / логика</span>
+            <span class="pill">Воронка / заявки</span>
+            <span class="pill">Выдача доступа</span>
+            <span class="pill">Админ-панель (при необходимости)</span>
+            <span class="pill">Интеграции / API</span>
+          </div>
+        </div>
+
+        <div class="panel small reveal delay-1">
+          <h3>Типовые кейсы</h3>
+          <ul>
+            <li>приём заявок + автоквалификация</li>
+            <li>каталог / меню / запись</li>
+            <li>платные подписки / доступ</li>
+            <li>личный кабинет (Mini App)</li>
+            <li>уведомления, рассылки, CRM-связки</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="outcomes">
+      <div class="section-title">
+        <h2>Результат для бизнеса</h2>
+        <p>почему это окупается</p>
+      </div>
+
+      <div class="grid">
+        <div class="panel reveal">
+          <h3>Что вы получаете</h3>
+          <ul>
+            <li>автоматизацию вместо ручных действий</li>
+            <li>понятный путь пользователя без “лишних кликов”</li>
+            <li>контроль и прозрачность (логи / статусы / отчётность)</li>
+            <li>масштабируемый продукт: можно наращивать функционал</li>
+          </ul>
+        </div>
+
+        <div class="panel reveal delay-1">
+          <h3>Критерии “готово”</h3>
+          <ul>
+            <li>согласованные сценарии работают на тестовых данных</li>
+            <li>обработка ошибок/исключений (не “падает”)</li>
+            <li>инструкция по запуску и настройке</li>
+            <li>передача исходников и доступов</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="process">
+      <div class="section-title">
+        <h2>Этапы работы</h2>
+        <p>коротко и по делу</p>
+      </div>
+
+      <div class="steps">
+        <div class="step reveal">
+          <b>1) Уточнение задачи</b>
+          <span>Цель, аудитория, сценарии, ограничения. Фиксируем объём.</span>
+        </div>
+        <div class="step reveal delay-1">
+          <b>2) Проектирование</b>
+          <span>Потоки, состояния, экраны (для Mini App), интеграции.</span>
+        </div>
+        <div class="step reveal delay-2">
+          <b>3) Разработка</b>
+          <span>Реализация логики, интерфейса, подключение API/БД.</span>
+        </div>
+        <div class="step reveal delay-3">
+          <b>4) Тест и передача</b>
+          <span>Приёмка по чек-листу, исправления, передача и инструкция.</span>
+        </div>
+      </div>
+
+      <div style="height:14px"></div>
+
+      <div class="quote reveal">
+        <div class="q">
+          “Работаю так, чтобы вам было легко принять результат: фиксируем объём, делаем по этапам, показываю прогресс,
+          сдаю понятный итог.”
+        </div>
+        <div class="a">— [Твоё имя], разработка Telegram-решений</div>
+      </div>
+    </section>
+
+    <section id="terms">
+      <div class="section-title">
+        <h2>Сроки и условия</h2>
+        <p>без лишней воды</p>
+      </div>
+
+      <div class="grid">
+        <div class="panel big reveal">
+          <h3>Стоимость</h3>
+          <p>
+            Стоимость зависит от функционала и интеграций. Предлагаю определить её после короткого созвона/переписки
+            (10–15 минут): я уточню требования и предложу оптимальную реализацию.
+          </p>
+          <div class="pillrow">
+            <span class="pill">Оценка по ТЗ</span>
+            <span class="pill">Фиксация этапов</span>
+            <span class="pill accent">Прозрачная приёмка</span>
+          </div>
+        </div>
+
+        <div class="panel small reveal delay-1">
+          <h3>Сроки</h3>
+          <ul>
+            <li>MVP (простая логика): 2–5 дней</li>
+            <li>с интеграциями/мини-кабинетом: 1–2 недели</li>
+            <li>точно — после уточнения задачи</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="cta reveal">
+        <div>
+          <h3>Готов обсудить задачу и предложить решение</h3>
+          <p>Напишите в Telegram или отправьте краткое описание: цель, что должен делать бот/Mini App, сроки.</p>
+        </div>
+        <div class="right">
+          <!-- ЗАМЕНИ: username и email -->
+          <a class="btn primary" href="https://t.me/USERNAME" target="_blank" rel="noreferrer">Написать в Telegram</a>
+          <a class="btn" href="mailto:youremail@example.com">Написать на Email</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="fine">
+        <div>© <span id="year"></span> • [Твоё имя] • Telegram Bot / Mini App</div>
+        <div style="color: rgba(255,255,255,.45);">Документ-лендинг для отправки заказчику</div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Smooth anchor scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href');
+        if (!id || id === '#') return;
+        const el = document.querySelector(id);
+        if (!el) return;
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Reveal on scroll (IntersectionObserver)
+    const els = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      for (const ent of entries) {
+        if (ent.isIntersecting) {
+          ent.target.classList.add('show');
+          io.unobserve(ent.target);
+        }
+      }
+    }, { threshold: 0.12 });
+
+    els.forEach(el => {
+      if (el.classList.contains('show')) return;
+      io.observe(el);
+    });
+
+    // "Save to PDF" helper (uses browser print)
+    document.getElementById('btnPdf').addEventListener('click', () => {
+      window.print();
+    });
+  </script>
+</body>
+</html>
